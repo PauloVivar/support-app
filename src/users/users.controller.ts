@@ -1,8 +1,8 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, UnprocessableEntityException } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { CreateUserDto, UpdateUserDto } from './users.dto';
 import { UsersService } from './users.service';
 
-@Controller('users')
+@Controller('v1/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -22,8 +22,8 @@ export class UsersController {
   }
 
   @Patch(':id')
-  updateUser(@Param('id') id: string, @Body() updatedUser: UpdateUserDto) {
-    return this.usersService.update(id, updatedUser);
+  updateUser(@Param('id') id: string, @Body() changes: UpdateUserDto) {
+    return this.usersService.update(id, changes);
   }
 
   @Delete(':id')
