@@ -19,7 +19,7 @@ import { Env } from './env.model';
         password: configService.get('DB_PASSWORD', { infer: true }),
         database: configService.get('DB_NAME', { infer: true }),
         autoLoadEntities: true,
-        synchronize: true,
+        synchronize: true, // solo para desarrollo
       }),
       inject: [ConfigService],
     }),

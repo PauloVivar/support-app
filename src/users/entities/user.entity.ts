@@ -5,27 +5,24 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @CreateDateColumn({ type: 'timestamptz', name: 'creado' })
+  @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP', name: 'creado' })
   createdAt: Date;
 
-  @UpdateDateColumn({ type: 'timestamptz', name: 'actualizado' })
+  @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP', name: 'actualizado' })
   updatedAt: Date;
 
-  @Column({ type: 'number', name: 'estado' })
+  @Column({ type: 'int', name: 'estado' })
   status: number;
 
-  @Column({ type: 'string', unique: true, name: 'username' })
+  @Column({ type: 'text', unique: true, name: 'username' })
   username: string;
 
-  @Column({ type: 'string', unique: true, name: 'email' })
+  @Column({ type: 'text', unique: true, name: 'email' })
   email: string;
 
-  @Column({ type: 'string', name: 'contrasenia' })
+  @Column({ type: 'text', name: 'contrasenia' })
   password: string;
 
-  @Column({ type: 'string', name: 'celular' })
-  cellphone: string;
-
-  @Column({ type: 'string', name: 'avatar', nullable: true })
-  avatar: string;
+  @Column({ type: 'text', name: 'celular' })
+  phone: string;
 }
