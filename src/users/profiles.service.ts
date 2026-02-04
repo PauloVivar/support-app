@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { CreateProfileDto, UpdateProfileDto } from './profiles.dto';
+import { CreateProfileDto, UpdateProfileDto } from './dtos/profiles.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Profile } from './entities';
@@ -19,6 +19,11 @@ export class ProfilesService {
   async getProfileById(id: string) {
     const profile = await this.findOne(id);
     return profile;
+  }
+
+  async getUserByProfileId(id: string) {
+    const profile = await this.findOne(id);
+    return profile.user;
   }
 
   async create(profile: CreateProfileDto) {
@@ -46,25 +51,37 @@ export class ProfilesService {
 
       const newProfile = await this.profileRepository.save(profileToSave);
       return newProfile;
-    } catch {
+    } catch (error) {
+      console.error('Error detallado:', error);
       throw new BadRequestException(`Error al crear el usuario y perfil`);
     }
   }
 
   async update(id: string, changes: UpdateProfileDto) {
-    const profile = await this.findOne(id);
-    const updatedProfile = this.profileRepository.merge(profile, changes);
-    return this.profileRepository.save(updatedProfile);
+    try {
+      const profile = await this.findOne(id);
+      const updatedProfile = this.profileRepository.merge(profile, changes);
+      const profileSaved = await this.profileRepository.save(updatedProfile);
+      return profileSaved;
+    } catch {
+      throw new BadRequestException(`Error al actualizar el usuario y perfil con id ${id}`);
+    }
   }
 
   async delete(id: string) {
-    const profile = await this.findOne(id);
-    const deletedProfile = this.profileRepository.delete(profile.id);
-    return { deletedProfile, message: `Usuario con id ${id} eliminado correctamente` };
+    try {
+      const deletedProfile = await this.profileRepository.delete(id);
+      return { deletedProfile, message: `Usuario con id ${id} eliminado correctamente` };
+    } catch {
+      throw new BadRequestException(`Error al eliminar el usuario y perfil con id ${id}`);
+    }
   }
 
   private async findOne(id: string) {
-    const profile = await this.profileRepository.findOneBy({ id });
+    const profile = await this.profileRepository.findOne({
+      where: { id },
+      relations: ['user'],
+    });
     if (!profile) {
       throw new NotFoundException(`El usuario y perfil con el ${id} no existe`);
     }

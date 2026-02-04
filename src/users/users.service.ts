@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { CreateUserDto, UpdateUserDto } from './users.dto';
+import { CreateUserDto, UpdateUserDto } from './dtos/users.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities';
@@ -31,15 +31,24 @@ export class UsersService {
   }
 
   async update(id: string, changes: UpdateUserDto) {
-    const user = await this.findOne(id);
-    const updatedUser = this.userRepository.merge(user, changes);
-    return this.userRepository.save(updatedUser);
+    try {
+      const user = await this.findOne(id);
+      const updatedUser = this.userRepository.merge(user, changes);
+      const userSaved = await this.userRepository.save(updatedUser);
+      return userSaved;
+    } catch {
+      throw new BadRequestException(`Error al actualizar el usuario con id ${id}`);
+    }
   }
 
   async delete(id: string) {
-    const user = await this.findOne(id);
-    const deletedUser = this.userRepository.delete(user.id);
-    return { deletedUser, message: `Usuario con id ${id} eliminado correctamente` };
+    try {
+      const user = await this.findOne(id);
+      const deletedUser = this.userRepository.delete(user.id);
+      return { deletedUser, message: `Usuario con id ${id} eliminado correctamente` };
+    } catch {
+      throw new BadRequestException(`Error al eliminar el usuario con id ${id}`);
+    }
   }
 
   private async findOne(id: string) {
