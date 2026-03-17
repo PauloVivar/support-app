@@ -20,7 +20,7 @@ import { PostsModule } from './posts/posts.module';
         username: configService.get('DB_USER', { infer: true }),
         password: configService.get('DB_PASSWORD', { infer: true }),
         autoLoadEntities: true,
-        synchronize: true, // solo para desarrollo
+        synchronize: false, // solo para desarrollo poner true
       }),
       inject: [ConfigService],
     }),
